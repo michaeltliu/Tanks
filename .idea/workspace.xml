@@ -2,9 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ae91851d-aa7b-4fb2-853d-451069e3e101" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/Terrain.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Testing.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Tanks/Tank.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Tanks/Tank.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Tanks/Terrain.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Tanks/Terrain.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Tanks/Window$Panel.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Tanks/Window$Panel.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Tanks/Window.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Tanks/Window.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Terrain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Terrain.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Window.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Window.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -27,6 +31,8 @@
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../Doesthiswork" />
+    <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -40,9 +46,16 @@
       </list>
     </option>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Application.Game">
     <configuration name="Game" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="Game" />
+      <module name="Tanks" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Testing" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Testing" />
       <module name="Tanks" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -51,6 +64,7 @@
     <recent_temporary>
       <list>
         <item itemvalue="Application.Game" />
+        <item itemvalue="Application.Testing" />
       </list>
     </recent_temporary>
   </component>
