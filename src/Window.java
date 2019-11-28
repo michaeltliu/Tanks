@@ -11,21 +11,23 @@ public class Window implements Runnable, KeyListener {
     public static final int TANK_WIDTH = 25;
     private int t = 0;
     private HashSet<Integer> pressedKeys;
+    private Tank activeTank;
 
     private class Panel extends JPanel {
         ArrayList<Integer> terrainHeights;
         int subdivision;
 
         public Panel() {
-            Terrain terrain = new Terrain(Window.HEIGHT/2 - 100, 12);
+            Terrain terrain = new Terrain(Window.HEIGHT/2 - 100, 8);
             terrain.generateTerrain();
             terrainHeights = terrain.getHeights();
             for (int i = 0; i < terrainHeights.size(); i ++) {
                 terrainHeights.set(i, terrainHeights.get(i) + Window.HEIGHT/2);
             }
-            subdivision = Math.round((Window.WIDTH + 0f)/terrainHeights.size());
+            //subdivision = Math.round((Window.WIDTH + 0f)/(terrainHeights.size()-1));
+            subdivision = Window.WIDTH/(terrainHeights.size()-1);
 
-            for (int i = 0; i < 10; i ++) {
+            for (int i = 0; i < numPlayers; i ++) {
                 new Tank();
             }
         }
@@ -38,6 +40,8 @@ public class Window implements Runnable, KeyListener {
                 drawTank(g, t);
             }
         }
+
+        // Connects the dots in terrainHeights
         public void drawTerrain(Graphics g) {
             for (int i = 0; i < terrainHeights.size() - 1; i ++) {
                 g.drawLine(i * subdivision, terrainHeights.get(i),
@@ -45,15 +49,31 @@ public class Window implements Runnable, KeyListener {
             }
         }
 
-        // angle parameter is the radian angle at which the tank's gun muzzle points
-        // TODO: reduce error between tank y position and the terrain height
-        // TODO: draw the tank normal to the terrain
         public void drawTank(Graphics g, Tank tank) {
+            Graphics2D g2 = (Graphics2D) g;
+
             int x = tank.getX();
+            int lowerBound = x/subdivision;
+            int y = Terrain.cosineInterpolate(terrainHeights.get(lowerBound),
+                    terrainHeights.get(lowerBound + 1), (x - subdivision * lowerBound)/(0.0 + subdivision))
+                    - TANK_WIDTH*2/3;
+
             double angle = tank.getMuzzleAngle();
-            int y = terrainHeights.get(x/subdivision) - TANK_WIDTH*2/3;
-            g.drawRoundRect(x,y,TANK_WIDTH,TANK_WIDTH*2/3,TANK_WIDTH/3,TANK_WIDTH/3);
-            //drawTankNozzle(g, x + TANK_WIDTH/2, y, angle);
+
+            // to draw the tank normal to the terrain, we rotate Graphics g by the
+            // inverse tangent of the slope of the hill under the middle of the tank
+            double slope = -(0.0 + terrainHeights.get(lowerBound + 1) - terrainHeights.get(lowerBound))/
+                    subdivision;
+            double tankRotationAngle = Math.atan(slope);
+            g2.rotate(-tankRotationAngle, x, y + TANK_WIDTH/3);
+
+            g2.drawRoundRect(x - TANK_WIDTH/2,y,
+                    TANK_WIDTH,TANK_WIDTH*2/3,TANK_WIDTH/3,TANK_WIDTH/3);
+            g2.rotate(-angle, x + 1, y - 3);
+            g2.drawRect(x + 1, y-6, 16, 6);
+            g2.rotate(angle, x + 1, y - 3);
+
+            g2.rotate(tankRotationAngle, x, y + TANK_WIDTH/3);
         }
 
         public void drawBullet(Graphics g) {
@@ -68,8 +88,10 @@ public class Window implements Runnable, KeyListener {
     private JFrame frame;
     private Panel panel;
     private Thread th;
+    private int numPlayers;
 
-    public Window() {
+    public Window(int count) {
+        numPlayers = count;
         init();
     }
 
@@ -83,10 +105,10 @@ public class Window implements Runnable, KeyListener {
         frame.setContentPane(panel);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-
         frame.addKeyListener(this);
+
         pressedKeys = new HashSet<>();
-        start();
+        activeTank = Tank.getAllTanks().get(Game.getTurn());
     }
 
     @Override
@@ -105,13 +127,17 @@ public class Window implements Runnable, KeyListener {
     }
 
     private void keyActions() {
-        Tank activeTank = Tank.getAllTanks().get(Game.getTurn());
-        for (Integer i : pressedKeys) {
-            if (i == KeyEvent.VK_KP_LEFT) activeTank.incMuzzleAngle(0.05);
-            else if (i == KeyEvent.VK_KP_RIGHT) activeTank.incMuzzleAngle(-0.05);
-            else if (i == KeyEvent.VK_KP_UP) activeTank.incPower(0.01);
-            else if (i == KeyEvent.VK_KP_DOWN) activeTank.incPower(-0.01);
+        if (pressedKeys.contains(KeyEvent.VK_SPACE)) {
+            activeTank.fireBullet();
+            start();
+            return;
         }
+        if (pressedKeys.contains(KeyEvent.VK_A)) activeTank.incMuzzleAngle(0.05);
+        if (pressedKeys.contains(KeyEvent.VK_D)) activeTank.incMuzzleAngle(-0.05);
+        if (pressedKeys.contains(KeyEvent.VK_W)) activeTank.incPower(0.01);
+        if (pressedKeys.contains(KeyEvent.VK_S)) activeTank.incPower(-0.01);
+
+        panel.repaint();
     }
     private void start() {
         th = new Thread(this);
