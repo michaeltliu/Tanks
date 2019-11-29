@@ -9,7 +9,7 @@ public class Window implements Runnable, KeyListener {
     public static final int WIDTH = 800;
     public static final int HEIGHT = 640;
     public static final int TANK_WIDTH = 25;
-    private int t = 0;
+    private double t = 0;
     private HashSet<Integer> pressedKeys;
     private Tank activeTank;
 
@@ -24,21 +24,27 @@ public class Window implements Runnable, KeyListener {
             for (int i = 0; i < terrainHeights.size(); i ++) {
                 terrainHeights.set(i, terrainHeights.get(i) + Window.HEIGHT/2);
             }
-            //subdivision = Math.round((Window.WIDTH + 0f)/(terrainHeights.size()-1));
-            subdivision = Window.WIDTH/(terrainHeights.size()-1);
+            subdivision = Math.round((Window.WIDTH + 0f)/(terrainHeights.size()-1));
+            //subdivision = Window.WIDTH/(terrainHeights.size()-1);
 
             for (int i = 0; i < numPlayers; i ++) {
                 new Tank();
+            }
+            for (Tank t : Tank.getAllTanks()) {
+                initTankHeight(t);
+                initTankAngle(t);
             }
         }
 
         public void paint(Graphics g) {
             super.paint(g);
-            if (t < 250) g.drawString("Welcome to Tanks!!!", 50+2*t, 100);
+            if (t < 250) g.drawString("Welcome to Tanks!!!", (int) (50+2*t), 100);
             drawTerrain(g);
-            for (Tank t : Tank.getAllTanks()) {
-                drawTank(g, t);
+            for (Tank tank : Tank.getAllTanks()) {
+                drawTank(g, tank);
             }
+            drawBullet(g);
+            drawPowerBar(g);
         }
 
         // Connects the dots in terrainHeights
@@ -49,22 +55,34 @@ public class Window implements Runnable, KeyListener {
             }
         }
 
-        public void drawTank(Graphics g, Tank tank) {
-            Graphics2D g2 = (Graphics2D) g;
-
+        private void initTankHeight(Tank tank) {
             int x = tank.getX();
             int lowerBound = x/subdivision;
             int y = Terrain.cosineInterpolate(terrainHeights.get(lowerBound),
                     terrainHeights.get(lowerBound + 1), (x - subdivision * lowerBound)/(0.0 + subdivision))
                     - TANK_WIDTH*2/3;
+            tank.setY(y);
+        }
+
+        private void initTankAngle(Tank tank) {
+            // to draw the tank normal to the terrain, we rotate Graphics g by the
+            // inverse tangent of the slope of the hill under the middle of the tank
+            int x = tank.getX();
+            int lowerBound = x/subdivision;
+            double slope = -(0.0 + terrainHeights.get(lowerBound + 1) - terrainHeights.get(lowerBound))/
+                    subdivision;
+            tank.setTankAngle(Math.atan(slope));
+        }
+
+        public void drawTank(Graphics g, Tank tank) {
+            Graphics2D g2 = (Graphics2D) g;
+
+            int x = tank.getX();
+            int y = tank.getY();
 
             double angle = tank.getMuzzleAngle();
 
-            // to draw the tank normal to the terrain, we rotate Graphics g by the
-            // inverse tangent of the slope of the hill under the middle of the tank
-            double slope = -(0.0 + terrainHeights.get(lowerBound + 1) - terrainHeights.get(lowerBound))/
-                    subdivision;
-            double tankRotationAngle = Math.atan(slope);
+            double tankRotationAngle = tank.getTankAngle();
             g2.rotate(-tankRotationAngle, x, y + TANK_WIDTH/3);
 
             g2.drawRoundRect(x - TANK_WIDTH/2,y,
@@ -77,7 +95,22 @@ public class Window implements Runnable, KeyListener {
         }
 
         public void drawBullet(Graphics g) {
+            if (false) {
+                activeTank.bulletLanded();
+                return;
+            }
+            g.fillOval(activeTank.xtrajectory(t), activeTank.yTrajectory(t), 4, 4);
+        }
 
+        //private boolean bulletCollision() {
+
+        //}
+
+        public void drawPowerBar(Graphics g) {
+            g.drawRect(Window.WIDTH/2 - 100, Window.HEIGHT - 100, 200, 50);
+            g.setColor(Color.RED);
+            g.fillRect(Window.WIDTH/2 - 100, Window.HEIGHT - 100, (int) (activeTank.getPower() * 200), 50);
+            g.setColor(Color.BLACK);
         }
 
         public ArrayList<Integer> getTerrainHeights() {
@@ -109,6 +142,8 @@ public class Window implements Runnable, KeyListener {
 
         pressedKeys = new HashSet<>();
         activeTank = Tank.getAllTanks().get(Game.getTurn());
+
+        running = false;
     }
 
     @Override
@@ -141,13 +176,16 @@ public class Window implements Runnable, KeyListener {
     }
     private void start() {
         th = new Thread(this);
+        running = true;
         th.start();
     }
 
+    private volatile boolean running;
+
     @Override
     public void run() {
-        while (true) {
-            t++;
+        while (running) {
+            t += 0.05;
             panel.repaint();
             try {
                 Thread.sleep(10);

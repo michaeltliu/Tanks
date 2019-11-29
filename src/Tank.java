@@ -3,10 +3,12 @@ import java.util.Random;
 
 public class Tank {
     private final int STARTING_HEALTH = 100;
-    private final int MAXIMUM_POWER = 50;       // think of units as m/s
+    private final int MAXIMUM_POWER = 100;       // think of units as m/s
     private int health;
     private int x;
-    private double muzzleAngle;     // radian angle at which the tank's gun muzzle points
+    private int y;
+    private double tankAngle;       // radian angle at which the tank is tilted on the terrain
+    private double muzzleAngle;     // radian angle of tank's gun muzzle relative to tank's body
     private double power;       // as a percent of the tank's maximum power
     private boolean lockedMuzzle;     // prevents muzzle angle/power from being adjusted while bullet is in flight
     private static ArrayList<Integer> tankPositions = new ArrayList<>();
@@ -19,7 +21,7 @@ public class Tank {
         Random rand = new Random();
         x = rand.nextInt(openLength);
         muzzleAngle = Math.PI/3;
-        power = 0.0;
+        power = 0.5;
         lockedMuzzle = false;
 
         while (!positionOK(x)) {
@@ -40,18 +42,22 @@ public class Tank {
 
     // r = <v * t * cos(theta), v * t * sin(theta) - 4.9 * t^2> + starting position
     // returns the x coordinate of the tank's bullet as a function of time
-    public int xtrajectory(int t) {
-        return (int) Math.round(power * MAXIMUM_POWER * t * Math.cos(muzzleAngle)) + x;
+    public int xtrajectory(double t) {
+        return (int) Math.round(power * MAXIMUM_POWER * t * Math.cos(muzzleAngle + tankAngle)) + x;
     }
 
     // returns the y coordinate of the tank's bullet relative to this Tank's y coordinate
-    public int yRelativeTrajectory(int t) {
-        return (int) Math.round(power * MAXIMUM_POWER * t * Math.sin(muzzleAngle) -
-                4.9 * Math.pow(t, 2));
+    public int yTrajectory(double t) {
+        return (int) -Math.round(power * MAXIMUM_POWER * t * Math.sin(muzzleAngle + tankAngle) -
+                4.9 * Math.pow(t, 2)) + y;
     }
 
     public void fireBullet() {
         lockedMuzzle = true;
+    }
+
+    public void bulletLanded() {
+        lockedMuzzle = false;
     }
 
     public static ArrayList<Integer> getTankPositions() {
@@ -71,6 +77,18 @@ public class Tank {
     }
     public void setX(int newX) {
         x = newX;
+    }
+    public int getY() {
+        return y;
+    }
+    public void setY(int newY) {
+        y = newY;
+    }
+    public double getTankAngle() {
+        return tankAngle;
+    }
+    public void setTankAngle(double angle) {
+        tankAngle = angle;
     }
     public double getMuzzleAngle() {
         return muzzleAngle;
