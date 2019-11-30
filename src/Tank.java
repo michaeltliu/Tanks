@@ -2,6 +2,53 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Tank {
+    public class Bullet {
+        private int bulletX;    // saves the most recent coordinates of the bullet
+        private int bulletY;    // reduces duplicate computation
+
+        public Bullet() {
+            bulletX = x;
+            bulletY = y;
+        }
+
+        // r = <v * t * cos(theta), v * t * sin(theta) - 4.9 * t^2> + starting position
+        // returns the x coordinate of the tank's bullet as a function of time
+        public int xTrajectory(double t) {
+            int bx = (int) Math.round(power * MAXIMUM_POWER * t * Math.cos(muzzleAngle + tankAngle)) + x;
+            bulletX = bx;
+            return bulletX;
+        }
+
+        // returns the y coordinate of the tank's bullet relative to this Tank's y coordinate
+        public int yTrajectory(double t) {
+            int by = (int) -Math.round(power * MAXIMUM_POWER * t * Math.sin(muzzleAngle + tankAngle) -
+                    4.9 * Math.pow(t, 2)) + y;
+            bulletY = by;
+            return bulletY;
+        }
+
+        // return 0 if no collision
+        // return 1 if ground collision
+        // return 2 + i if collision with the i-th Tank in Tank.allTanks()
+        public int bulletCollision(ArrayList<Integer> terrainHeights) {
+            int subdivision = (int) Math.round((Window.WIDTH + 0.0)/(terrainHeights.size()-1));
+            int lowerBound = bulletX/subdivision;
+
+            if (bulletY > terrainHeights.get(lowerBound)) return 1;
+
+            for (int i = 0; i < Tank.allTanks.size(); i ++) {
+                Tank tank = allTanks.get(i);
+                if (tank == Tank.this) continue;
+                else if (bulletX > tank.getX() - Window.TANK_WIDTH/2 &&
+                        bulletX < tank.getX() + Window.TANK_WIDTH/2 &&
+                        bulletY > tank.getY() && bulletY < tank.getY() - Window.TANK_WIDTH*2/3) {
+                    return 2 + i;
+                }
+            }
+
+            return 0;
+        }
+    }
     private final int STARTING_HEALTH = 100;
     private final int MAXIMUM_POWER = 100;       // think of units as m/s
     private int health;
@@ -17,7 +64,7 @@ public class Tank {
     public Tank() {
         health = STARTING_HEALTH;
 
-        int openLength = Window.WIDTH - Window.TANK_WIDTH;
+        int openLength = Window.WIDTH - Window.TANK_WIDTH;      // ensures tank doesn't extend beyond right edge
         Random rand = new Random();
         x = rand.nextInt(openLength);
         muzzleAngle = Math.PI/3;
@@ -38,18 +85,6 @@ public class Tank {
             if (Math.abs(i - x) < Window.TANK_WIDTH + 6) return false;
         }
         return true;
-    }
-
-    // r = <v * t * cos(theta), v * t * sin(theta) - 4.9 * t^2> + starting position
-    // returns the x coordinate of the tank's bullet as a function of time
-    public int xtrajectory(double t) {
-        return (int) Math.round(power * MAXIMUM_POWER * t * Math.cos(muzzleAngle + tankAngle)) + x;
-    }
-
-    // returns the y coordinate of the tank's bullet relative to this Tank's y coordinate
-    public int yTrajectory(double t) {
-        return (int) -Math.round(power * MAXIMUM_POWER * t * Math.sin(muzzleAngle + tankAngle) -
-                4.9 * Math.pow(t, 2)) + y;
     }
 
     public void fireBullet() {

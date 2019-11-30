@@ -14,8 +14,8 @@ public class Window implements Runnable, KeyListener {
     private Tank activeTank;
 
     private class Panel extends JPanel {
-        ArrayList<Integer> terrainHeights;
-        int subdivision;
+        private ArrayList<Integer> terrainHeights;
+        private int subdivision;
 
         public Panel() {
             Terrain terrain = new Terrain(Window.HEIGHT/2 - 100, 8);
@@ -24,7 +24,7 @@ public class Window implements Runnable, KeyListener {
             for (int i = 0; i < terrainHeights.size(); i ++) {
                 terrainHeights.set(i, terrainHeights.get(i) + Window.HEIGHT/2);
             }
-            subdivision = Math.round((Window.WIDTH + 0f)/(terrainHeights.size()-1));
+            subdivision = (int) Math.round((Window.WIDTH + 0.0)/(terrainHeights.size()-1));
             //subdivision = Window.WIDTH/(terrainHeights.size()-1);
 
             for (int i = 0; i < numPlayers; i ++) {
@@ -41,7 +41,9 @@ public class Window implements Runnable, KeyListener {
             if (t < 250) g.drawString("Welcome to Tanks!!!", (int) (50+2*t), 100);
             drawTerrain(g);
             for (Tank tank : Tank.getAllTanks()) {
+                if (tank == activeTank) g.setColor(Color.BLUE);
                 drawTank(g, tank);
+                g.setColor(Color.BLACK);
             }
             drawBullet(g);
             drawPowerBar(g);
@@ -95,16 +97,13 @@ public class Window implements Runnable, KeyListener {
         }
 
         public void drawBullet(Graphics g) {
-            if (false) {
-                activeTank.bulletLanded();
+            Tank.Bullet bullet = activeTank.new Bullet();
+            if (bullet.bulletCollision(terrainHeights) > 0) {
+                nextTurn();
                 return;
             }
-            g.fillOval(activeTank.xtrajectory(t), activeTank.yTrajectory(t), 4, 4);
+            g.fillOval(bullet.xTrajectory(t), bullet.yTrajectory(t), 4, 4);
         }
-
-        //private boolean bulletCollision() {
-
-        //}
 
         public void drawPowerBar(Graphics g) {
             g.drawRect(Window.WIDTH/2 - 100, Window.HEIGHT - 100, 200, 50);
@@ -164,6 +163,7 @@ public class Window implements Runnable, KeyListener {
     private void keyActions() {
         if (pressedKeys.contains(KeyEvent.VK_SPACE)) {
             activeTank.fireBullet();
+            running = true;
             start();
             return;
         }
@@ -174,9 +174,16 @@ public class Window implements Runnable, KeyListener {
 
         panel.repaint();
     }
+
+    public void nextTurn() {
+        activeTank.bulletLanded();
+        Game.nextTurn();
+        running = false;
+        t = 0;
+    }
+
     private void start() {
         th = new Thread(this);
-        running = true;
         th.start();
     }
 
