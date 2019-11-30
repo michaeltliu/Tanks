@@ -1,8 +1,8 @@
 import java.util.Scanner;
 
 public class Game {
-
     private static int turn;
+
     public static int getTurn() {
         return turn;
     }

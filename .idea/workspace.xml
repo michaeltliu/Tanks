@@ -2,11 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ae91851d-aa7b-4fb2-853d-451069e3e101" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/Helper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Wind.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Tanks/Tank$Bullet.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Tanks/Tank$Bullet.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Tanks/Tank.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Tanks/Tank.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Tanks/Window$Panel.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Tanks/Window$Panel.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Tanks/Window.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Tanks/Window.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Game.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Tank.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Tank.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Window.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Window.java" afterDir="false" />
     </list>

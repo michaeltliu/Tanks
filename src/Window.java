@@ -13,6 +13,8 @@ public class Window implements Runnable, KeyListener {
     private HashSet<Integer> pressedKeys;
     private Tank activeTank;
     private Tank.Bullet bullet;
+    private Wind wind;
+    private boolean gameEnd;
 
     private class Panel extends JPanel {
         private ArrayList<Integer> terrainHeights;
@@ -38,13 +40,18 @@ public class Window implements Runnable, KeyListener {
 
         public void paint(Graphics g) {
             super.paint(g);
-            if (t < 250) g.drawString("Welcome to Tanks!!!", (int) (50+2*t), 100);
-            drawTerrain(g);
-            for (Tank tank : Tank.getAllTanks()) {
-                drawTank(g, tank);
+            if (gameEnd) {
+                g.drawString("Game ended", Window.WIDTH/2 - 10, Window.HEIGHT/2);
             }
-            drawBullet(g);
-            drawPowerBar(g);
+            else if (!gameEnd) {
+                drawTerrain(g);
+                for (Tank tank : Tank.getAllTanks()) {
+                    drawTank(g, tank);
+                }
+                drawBullet(g);
+                drawPowerBar(g);
+                drawWindBar(g);
+            }
         }
 
         // Connects the dots in terrainHeights
@@ -104,6 +111,7 @@ public class Window implements Runnable, KeyListener {
             if (event >= 2) {
                 Tank tank = Tank.getAllTanks().get(event - 2);
                 tank.setHealth(tank.getHealth() - 25);
+                checkDeath(tank);
                 nextTurn();
                 return;
             }
@@ -111,7 +119,7 @@ public class Window implements Runnable, KeyListener {
                 nextTurn();
                 return;
             }
-            g.fillOval(bullet.xTrajectory(t), bullet.yTrajectory(t), 4, 4);
+            g.fillOval(bullet.xTrajectory(t, wind), bullet.yTrajectory(t), 4, 4);
         }
 
         public void drawPowerBar(Graphics g) {
@@ -119,6 +127,25 @@ public class Window implements Runnable, KeyListener {
             g.setColor(Color.RED);
             g.fillRect(Window.WIDTH/2 - 100, Window.HEIGHT - 100, (int) (activeTank.getPower() * 200), 50);
             g.setColor(Color.BLACK);
+            g.drawString(Integer.toString((int) (activeTank.getPower() * 100)), Window.WIDTH/2 - 90, Window.HEIGHT - 75);
+        }
+
+        public void drawWindBar(Graphics g) {
+            g.drawRect(Window.WIDTH/2 - 100, 25, 200, 35);
+            g.setColor(Color.CYAN);
+            if (wind.getVelocity() < 0) {
+                g.fillRect(Window.WIDTH/2 + (int) (wind.getVelocity()*100.0/15), 26,
+                        (int) -(wind.getVelocity()*100.0/15), 34);
+            }
+            else if (wind.getVelocity() > 0) {
+                g.fillRect(Window.WIDTH/2, 26, (int) (wind.getVelocity()*100.0/15), 34);
+            }
+            g.setColor(Color.BLACK);
+            g.drawString(Double.toString(Helper.round(wind.getVelocity(), 2)), Window.WIDTH/2 - 90, 42);
+        }
+
+        public void win() {
+            gameEnd = true;
         }
 
         public ArrayList<Integer> getTerrainHeights() {
@@ -150,8 +177,10 @@ public class Window implements Runnable, KeyListener {
 
         pressedKeys = new HashSet<>();
         activeTank = Tank.getAllTanks().get(Game.getTurn());
+        wind = new Wind();
         bullet = activeTank.new Bullet();
 
+        gameEnd = false;
         running = false;
     }
 
@@ -185,11 +214,22 @@ public class Window implements Runnable, KeyListener {
         panel.repaint();
     }
 
+    public void checkDeath(Tank tank) {
+        if (tank.getHealth() <= 0) {
+            Tank.getAllTanks().remove(tank);
+        }
+        if (Tank.getAllTanks().size() == 1) {
+            panel.win();
+        }
+    }
+
     public void nextTurn() {
         activeTank.bulletLanded();
         Game.nextTurn();
         activeTank = Tank.getAllTanks().get(Game.getTurn());
         bullet = activeTank.new Bullet();
+        wind.generateNewWind();
+
         running = false;
         t = 0;
 

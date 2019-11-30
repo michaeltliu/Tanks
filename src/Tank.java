@@ -13,8 +13,9 @@ public class Tank {
 
         // r = <v * t * cos(theta), v * t * sin(theta) - 4.9 * t^2> + starting position
         // returns the x coordinate of the tank's bullet as a function of time
-        public int xTrajectory(double t) {
-            int bx = (int) Math.round(power * MAXIMUM_POWER * t * Math.cos(muzzleAngle + tankAngle)) + x;
+        public int xTrajectory(double t, Wind wind) {
+            int bx = (int) Math.round(power * MAXIMUM_POWER * t * Math.cos(muzzleAngle + tankAngle) +
+                    wind.getVelocity() * t) + x;
             bulletX = bx;
             return bulletX;
         }
@@ -138,7 +139,7 @@ public class Tank {
         return power;
     }
     public void incPower(double power) {
-        if (!lockedMuzzle && this.power + power > 0 && this.power + power <= 1)
+        if (!lockedMuzzle && this.power + power > 0 && this.power + power < 1.0000001)      // double rounding error
             this.power += power;
     }
 
