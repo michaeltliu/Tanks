@@ -12,6 +12,7 @@ public class Window implements Runnable, KeyListener {
     private double t = 0;
     private HashSet<Integer> pressedKeys;
     private Tank activeTank;
+    private Tank.Bullet bullet;
 
     private class Panel extends JPanel {
         private ArrayList<Integer> terrainHeights;
@@ -25,7 +26,6 @@ public class Window implements Runnable, KeyListener {
                 terrainHeights.set(i, terrainHeights.get(i) + Window.HEIGHT/2);
             }
             subdivision = (int) Math.round((Window.WIDTH + 0.0)/(terrainHeights.size()-1));
-            //subdivision = Window.WIDTH/(terrainHeights.size()-1);
 
             for (int i = 0; i < numPlayers; i ++) {
                 new Tank();
@@ -41,9 +41,7 @@ public class Window implements Runnable, KeyListener {
             if (t < 250) g.drawString("Welcome to Tanks!!!", (int) (50+2*t), 100);
             drawTerrain(g);
             for (Tank tank : Tank.getAllTanks()) {
-                if (tank == activeTank) g.setColor(Color.BLUE);
                 drawTank(g, tank);
-                g.setColor(Color.BLACK);
             }
             drawBullet(g);
             drawPowerBar(g);
@@ -87,6 +85,11 @@ public class Window implements Runnable, KeyListener {
             double tankRotationAngle = tank.getTankAngle();
             g2.rotate(-tankRotationAngle, x, y + TANK_WIDTH/3);
 
+            g2.drawRect(x-TANK_WIDTH/2, y + TANK_WIDTH*2/3 + 10, TANK_WIDTH, 5);
+            g2.setColor(Color.RED);
+            g2.fillRect(x - TANK_WIDTH/2, y + TANK_WIDTH*2/3 + 10,
+                    (int) (TANK_WIDTH * tank.getHealth()/100.0), 5);
+            g2.setColor(Color.BLACK);
             g2.drawRoundRect(x - TANK_WIDTH/2,y,
                     TANK_WIDTH,TANK_WIDTH*2/3,TANK_WIDTH/3,TANK_WIDTH/3);
             g2.rotate(-angle, x + 1, y - 3);
@@ -97,8 +100,14 @@ public class Window implements Runnable, KeyListener {
         }
 
         public void drawBullet(Graphics g) {
-            Tank.Bullet bullet = activeTank.new Bullet();
-            if (bullet.bulletCollision(terrainHeights) > 0) {
+            int event = bullet.bulletCollision(terrainHeights);
+            if (event >= 2) {
+                Tank tank = Tank.getAllTanks().get(event - 2);
+                tank.setHealth(tank.getHealth() - 25);
+                nextTurn();
+                return;
+            }
+            if (event == 1) {
                 nextTurn();
                 return;
             }
@@ -141,6 +150,7 @@ public class Window implements Runnable, KeyListener {
 
         pressedKeys = new HashSet<>();
         activeTank = Tank.getAllTanks().get(Game.getTurn());
+        bullet = activeTank.new Bullet();
 
         running = false;
     }
@@ -178,8 +188,12 @@ public class Window implements Runnable, KeyListener {
     public void nextTurn() {
         activeTank.bulletLanded();
         Game.nextTurn();
+        activeTank = Tank.getAllTanks().get(Game.getTurn());
+        bullet = activeTank.new Bullet();
         running = false;
         t = 0;
+
+        panel.repaint();
     }
 
     private void start() {

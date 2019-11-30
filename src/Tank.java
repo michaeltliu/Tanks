@@ -34,21 +34,23 @@ public class Tank {
             int subdivision = (int) Math.round((Window.WIDTH + 0.0)/(terrainHeights.size()-1));
             int lowerBound = bulletX/subdivision;
 
-            if (bulletY > terrainHeights.get(lowerBound)) return 1;
-
             for (int i = 0; i < Tank.allTanks.size(); i ++) {
                 Tank tank = allTanks.get(i);
                 if (tank == Tank.this) continue;
                 else if (bulletX > tank.getX() - Window.TANK_WIDTH/2 &&
                         bulletX < tank.getX() + Window.TANK_WIDTH/2 &&
-                        bulletY > tank.getY() && bulletY < tank.getY() - Window.TANK_WIDTH*2/3) {
+                        bulletY > tank.getY() && bulletY < tank.getY() + Window.TANK_WIDTH*2/3) {
                     return 2 + i;
                 }
             }
 
+            if (lowerBound < 0 || lowerBound >= terrainHeights.size() ||
+                    bulletY > terrainHeights.get(lowerBound)) return 1;
+
             return 0;
         }
     }
+
     private final int STARTING_HEALTH = 100;
     private final int MAXIMUM_POWER = 100;       // think of units as m/s
     private int health;

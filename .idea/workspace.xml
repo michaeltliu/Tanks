@@ -3,14 +3,11 @@
   <component name="ChangeListManager">
     <list default="true" id="ae91851d-aa7b-4fb2-853d-451069e3e101" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Tanks/Tank$Bullet.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Tanks/Tank$Bullet.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Tanks/Tank.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Tanks/Tank.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Tanks/Terrain.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Tanks/Terrain.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Tanks/Testing.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Tanks/Testing.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Tanks/Window$Panel.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Tanks/Window$Panel.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Tanks/Window.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Tanks/Window.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Tank.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Tank.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Terrain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Terrain.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Testing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Testing.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Window.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Window.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -95,16 +92,5 @@
         </entry>
       </map>
     </option>
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/Window.java</url>
-          <line>47</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>
