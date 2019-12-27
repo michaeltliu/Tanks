@@ -38,9 +38,10 @@ public class Tank {
             for (int i = 0; i < Tank.allTanks.size(); i ++) {
                 Tank tank = allTanks.get(i);
                 if (tank == Tank.this) continue;
-                else if (bulletX > tank.getX() - Window.TANK_WIDTH/2 &&
-                        bulletX < tank.getX() + Window.TANK_WIDTH/2 &&
-                        bulletY > tank.getY() && bulletY < tank.getY() + Window.TANK_WIDTH*2/3) {
+                // allows an extra +/- 4 pixel margin of error
+                else if (bulletX > tank.getX() - Window.TANK_WIDTH/2 - 4 &&
+                        bulletX < tank.getX() + Window.TANK_WIDTH/2 + 4 &&
+                        bulletY > tank.getY() - 4 && bulletY < tank.getY() + Window.TANK_WIDTH*2/3 + 4) {
                     return 2 + i;
                 }
             }
@@ -55,6 +56,7 @@ public class Tank {
     private final int STARTING_HEALTH = 100;
     private final int MAXIMUM_POWER = 100;       // think of units as m/s
     private int health;
+    private int id;
     private int x;
     private int y;
     private double tankAngle;       // radian angle at which the tank is tilted on the terrain
@@ -65,15 +67,16 @@ public class Tank {
     private static ArrayList<Tank> allTanks = new ArrayList<>();    //maintains ArrayList of all Tank objects created
 
     public Tank() {
+        id = allTanks.size() + 1;
         health = STARTING_HEALTH;
 
         int openLength = Window.WIDTH - Window.TANK_WIDTH;      // ensures tank doesn't extend beyond right edge
         Random rand = new Random();
-        x = rand.nextInt(openLength);
         muzzleAngle = Math.PI/3;
         power = 0.5;
         lockedMuzzle = false;
 
+        x = rand.nextInt(openLength);
         while (!positionOK(x)) {
             // Guarantees tanks are not randomly dropped too close to each other
             x = rand.nextInt(openLength);
@@ -85,7 +88,7 @@ public class Tank {
 
     private boolean positionOK(int pos) {
         for (Integer i : tankPositions) {
-            if (Math.abs(i - x) < Window.TANK_WIDTH + 6) return false;
+            if (Math.abs(i - pos) < Window.TANK_WIDTH + 6) return false;
         }
         return true;
     }
@@ -104,6 +107,7 @@ public class Tank {
     public static ArrayList<Tank> getAllTanks() {
         return allTanks;
     }
+    public int getId() { return id; }
     public int getHealth() {
         return health;
     }

@@ -41,7 +41,8 @@ public class Window implements Runnable, KeyListener {
         public void paint(Graphics g) {
             super.paint(g);
             if (gameEnd) {
-                g.drawString("Game ended", Window.WIDTH/2 - 10, Window.HEIGHT/2);
+                g.drawString("Game ended. Player " + Tank.getAllTanks().get(0).getId() + " has won.",
+                        Window.WIDTH/2 - 80, Window.HEIGHT/2);
             }
             else if (!gameEnd) {
                 drawTerrain(g);
@@ -99,6 +100,7 @@ public class Window implements Runnable, KeyListener {
             g2.setColor(Color.BLACK);
             g2.drawRoundRect(x - TANK_WIDTH/2,y,
                     TANK_WIDTH,TANK_WIDTH*2/3,TANK_WIDTH/3,TANK_WIDTH/3);
+            g2.drawString(Integer.toString(tank.getId()), x, y + 15);
             g2.rotate(-angle, x + 1, y - 3);
             g2.drawRect(x + 1, y-6, 16, 6);
             g2.rotate(angle, x + 1, y - 3);
